@@ -39,7 +39,7 @@ class User(AbstractUser, UserValidator):
         verbose_name='Пароль'
     )
     USERNAME_FIELD: 'email'
-    
+
     class Meta:
         ordering = ('username', )
         verbose_name = 'Пользователь'
@@ -131,7 +131,7 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
-        related_name='tags',
+        related_name='recipes',
         verbose_name='Теги'
     )
     cooking_time = models.IntegerField(
