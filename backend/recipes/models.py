@@ -61,8 +61,8 @@ class Ingredient(models.Model):
 
     class Meta:
         ordering = ['-id']
-        verbose_name = 'Ингридиент'
-        verbose_name_plural = 'Ингридиенты'
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
         return self.name
@@ -127,7 +127,7 @@ class Recipe(models.Model):
         Ingredient,
         through='RecipeIngredient',
         related_name='recipes',
-        verbose_name='Ингридиенты'
+        verbose_name='Ингредиенты'
     )
     tags = models.ManyToManyField(
         Tag,

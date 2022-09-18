@@ -1,7 +1,6 @@
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -9,7 +8,6 @@ from rest_framework.response import Response
 
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Tag, User)
-
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import AuthorOrReadOnly
@@ -35,17 +33,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, ]
     filter_class = RecipeFilter
 
-    def favorite_or_shopping_cart_method(self, request, pk, method):
-        if method == 'favorite':
-            model = FavoriteRecipe
-            serializer = FavoriteSerializer()
-            error_already = 'Рецепт уже в избранном'
-            error_no = 'Такого рецепта нет в избранном'
-        if method == 'shopping_cart':
-            model = ShoppingCart
-            serializer = ShoppingCartSerializer()
-            error_already = 'Рецепт уже в корзине покупок'
-            error_no = 'Такого рецепта нет в списке'
+    def favorite_or_shopping_cart_method(self, request, pk, model,
+                                         serializer, error_already, error_no):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
         if request.method == 'POST':
@@ -61,14 +50,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {'errors': error_already},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        if request.method == 'DELETE':
-            used_recipe = model.objects.filter(
-                user=user,
-                recipe=recipe
-            )
-            if used_recipe.exists():
-                used_recipe.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+        used_recipe = model.objects.filter(
+            user=user,
+            recipe=recipe
+        )
+        if used_recipe.exists():
+            used_recipe.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
             {'errors': error_no},
             status=status.HTTP_400_BAD_REQUEST)
@@ -80,8 +68,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         url_path='favorite'
     )
     def favorite(self, request, pk):
+        model = FavoriteRecipe
+        serializer = FavoriteSerializer()
+        error_already = 'Рецепт уже в избранном'
+        error_no = 'Такого рецепта нет в избранном'
         return self.favorite_or_shopping_cart_method(
-            request, pk, 'favorite'
+            request, pk, model, serializer, error_already, error_no
         )
 
     @action(
@@ -90,8 +82,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated, ]
     )
     def shopping_cart(self, request, pk):
+        model = ShoppingCart
+        serializer = ShoppingCartSerializer()
+        error_already = 'Рецепт уже в корзине покупок'
+        error_no = 'Такого рецепта нет в списке'
         return self.favorite_or_shopping_cart_method(
-            request, pk, 'shopping_cart'
+            request, pk, model, serializer, error_already, error_no
         )
 
     @action(
