@@ -17,3 +17,4 @@ urlpatterns = [
     path('auth/', include('djoser.urls.authtoken'), name='djoser-authtoken'),
     path('', include(router.urls), name='api')
 ]
+# gghhjj
