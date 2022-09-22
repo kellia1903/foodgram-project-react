@@ -58,8 +58,8 @@ jobs:
           stack_file_name: docker-compose.yaml
           script: |
             sudo docker-compose stop
-            sudo docker-compose rm backend
-            sudo docker-compose rm frontend
+            sudo docker-compose rm backend-1
+            sudo docker-compose rm frontend-1
             rm .env
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
