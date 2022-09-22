@@ -130,8 +130,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         followed = get_object_or_404(User, id=pk)
         follower = request.user
         subscribed = followed.subscriptions.filter(
-                     username=follower.username
-                     ).exists()
+            username=follower.username
+        ).exists()
 
         if request.method == 'POST':
             if followed == follower:
