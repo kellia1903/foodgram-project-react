@@ -72,6 +72,7 @@ jobs:
             sudo docker-compose exec backend python manage.py makemigrations
             sudo docker-compose exec -T backend python manage.py migrate --noinput
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
+            
   # send_message:
   #   runs-on: ubuntu-latest
   #   needs: deploy
