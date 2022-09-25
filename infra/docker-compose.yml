@@ -21,7 +21,7 @@ services:
   
   frontend:
     image: kellia1903/foodgram_fronted:v.1.0
-    # restart: always
+    restart: always
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
