@@ -21,7 +21,7 @@ services:
   
   frontend:
     image: kellia1903/foodgram_fronted:v.1.0
-    restart: always
+    # restart: always
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
@@ -30,11 +30,11 @@ services:
   nginx:
     image: nginx:1.21.3-alpine
     ports:
-      - "8080:80"
+      - "8000:80"
     # extra_hosts: #
     #   - "host.docker.internal:host-gateway" #
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
