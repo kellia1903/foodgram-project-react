@@ -21,7 +21,7 @@ services:
   
   frontend:
     image: kellia1903/foodgram_fronted:v.1.0
-    restart: always
+    # restart: always
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
@@ -30,7 +30,7 @@ services:
   nginx:
     image: nginx:1.19.3
     ports:
-      - "80:80"
+      - "1080:80"
     # extra_hosts: #
     #   - "host.docker.internal:host-gateway" #
     volumes:

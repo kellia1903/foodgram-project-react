@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, '../backend'))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='x29f)83^t14#gfd#5a$izljv@z179&2#t==(vp9&&_z=_-&!^i')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
