@@ -30,11 +30,9 @@ services:
   nginx:
     image: nginx:1.21.3-alpine
     ports:
-      - "8000:80"
-    # extra_hosts: #
-    #   - "host.docker.internal:host-gateway" #
+      - "8080:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
