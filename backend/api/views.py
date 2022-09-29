@@ -21,7 +21,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
-    filter_backends = [DjangoFilterBackend, ]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, ]
     filter_class = IngredientFilter
     search_fields = ['^name', ]
 
@@ -31,7 +31,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [AuthorOrReadOnly, ]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, ]
+    filter_backends = [DjangoFilterBackend, ]
     filter_class = RecipeFilter
 
     def favorite_or_shopping_cart_method(self, request, pk, model,
