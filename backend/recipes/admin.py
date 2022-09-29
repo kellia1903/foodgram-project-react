@@ -1,13 +1,20 @@
-from django.contrib.admin import ModelAdmin, site
+from django.contrib.admin import ModelAdmin, TabularInline, site
 
-from .models import Ingredient, Recipe, ShoppingCart, Tag, User
+from .models import (Ingredient, Recipe, RecipeIngredient,
+                     ShoppingCart, Tag, User)
 
 
 class UserAdmin(ModelAdmin):
     list_filter = ('username', 'email')
 
 
+class IngredientRecipeInline(TabularInline):
+    model = RecipeIngredient
+    extra = 1
+
+
 class RecipeAdmin(ModelAdmin):
+    inlines = (IngredientRecipeInline,)
     list_display = ('name', 'author', 'added_in_favorites')
     list_filter = ('author', 'name', 'tags',)
     readonly_fields = ('added_in_favorites',)

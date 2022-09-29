@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -23,6 +23,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     filter_backends = [DjangoFilterBackend, ]
     filter_class = IngredientFilter
+    search_fields = ['^name', ]
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -30,7 +31,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [AuthorOrReadOnly, ]
-    filter_backends = [DjangoFilterBackend, ]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, ]
     filter_class = RecipeFilter
 
     def favorite_or_shopping_cart_method(self, request, pk, model,

@@ -9,7 +9,10 @@ services:
       - ./.env
   
   backend:
-    image: kellia1903/foodgram_backend:v.1.0
+    build:
+      context: ../
+      dockerfile: ./foodgram/Dockerfile
+    # image: kellia1903/foodgram_backend:v.1.0
     restart: always
     volumes:
       - static_value:/app/static/
@@ -20,8 +23,10 @@ services:
       - ./.env
   
   frontend:
-    image: kellia1903/foodgram_fronted:v.1.0
-    restart: always
+    build:
+      context: ../frontend
+      dockerfile: ./Dockerfile
+    # image: kellia1903/foodgram_fronted:v.1.0
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:

@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with open(
-                '../data/ingredients.csv',
+                '../backend/recipes/data/ingredients.csv',
                 'r',
                 encoding='UTF-8'
         ) as csv_file:
