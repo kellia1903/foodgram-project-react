@@ -3,7 +3,7 @@ from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets, filters
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
@@ -12,7 +12,7 @@ from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import AuthorOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientSerializer,
-                          RecipeSerializer, ShoppingCartSerializer,
+                          RecipeSerializer, RecipeCreateSerializer,
                           TagSerializer, UserFollowSerializer)
 
 
@@ -22,29 +22,37 @@ class IngredientViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, ]
-    filter_class = IngredientFilter
+    filterset_class = IngredientFilter
     search_fields = ['^name', ]
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitPageNumberPagination
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     permission_classes = [AuthorOrReadOnly, ]
     filter_backends = [DjangoFilterBackend, ]
-    filter_class = RecipeFilter
+    filterset_class = RecipeFilter
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return RecipeSerializer
+        return RecipeCreateSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
     def favorite_or_shopping_cart_method(self, request, pk, model,
-                                         serializer, error_already, error_no):
+                                         error_already, error_no):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
+        serializer = FavoriteSerializer(recipe)
         if request.method == 'POST':
-            using_recipe, created = model.objects.get_or_create(
+            using_recipe = model.objects.get_or_create(
                 user=user, recipe=recipe
             )
-            if created:
+            if using_recipe[1]:
                 return Response(
-                    serializer.to_representation(instance=using_recipe),
+                    data=serializer.data,
                     status=status.HTTP_201_CREATED
                 )
             return Response(
@@ -60,7 +68,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
             {'errors': error_no},
-            status=status.HTTP_400_BAD_REQUEST)
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(
         detail=True,
@@ -70,11 +79,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         model = FavoriteRecipe
-        serializer = FavoriteSerializer()
         error_already = 'Рецепт уже в избранном'
         error_no = 'Такого рецепта нет в избранном'
         return self.favorite_or_shopping_cart_method(
-            request, pk, model, serializer, error_already, error_no
+            request, pk, model, error_already, error_no
         )
 
     @action(
@@ -84,11 +92,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         model = ShoppingCart
-        serializer = ShoppingCartSerializer()
         error_already = 'Рецепт уже в корзине покупок'
         error_no = 'Такого рецепта нет в списке'
         return self.favorite_or_shopping_cart_method(
-            request, pk, model, serializer, error_already, error_no
+            request, pk, model, error_already, error_no
         )
 
     @action(
