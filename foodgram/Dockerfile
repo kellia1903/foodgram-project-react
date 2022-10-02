@@ -5,11 +5,11 @@ RUN mkdir /backend
 
 RUN mkdir /app
 
-COPY ../requirements.txt /app
+COPY requirements.txt /app
 
 COPY foodgram/. /app
 
-COPY ../backend/. /backend
+COPY backend/. /backend
 
 WORKDIR /app
 
